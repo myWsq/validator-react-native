@@ -5,12 +5,15 @@
 
 import * as React from 'react';
 import { StyleSheet, Text, View, Alert, AsyncStorage } from 'react-native';
-import { Button, FormInput, FormLabel, FormValidationMessage, colors } from 'react-native-elements';
+import { Button, FormInput, FormLabel, FormValidationMessage } from 'react-native-elements';
 import { color, fontFamily } from '../../../theme';
 import { isAlphanumeric } from 'validator';
-import { NavigationScreenProps, SafeAreaView } from 'react-navigation';
+import { NavigationScreenProps } from 'react-navigation';
 import { get, post } from '../../../utils/fetch';
 import { Response, ResponseCode } from '../../../utils/interface';
+import Title from '../../../components/Title';
+import Container from '../../../components/Container';
+import Form from '../../../components/Form/Form';
 export interface SignUpProps extends NavigationScreenProps {}
 
 export interface SignUpState {
@@ -139,30 +142,31 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 	};
 	render() {
 		return (
-			<SafeAreaView style={styles.container}>
-				<Text style={styles.title}>注册账户</Text>
-				<View style={styles.line} />
-				<FormLabel fontFamily={fontFamily}>用户名</FormLabel>
-				<FormInput returnKeyType="next" onChangeText={this.onUsernameChange} placeholder="请输入您的用户名" />
-				<FormValidationMessage>{this.state.usernameErrorMessage}</FormValidationMessage>
-				<FormLabel>密码</FormLabel>
-				<FormInput
-					secureTextEntry
-					onChangeText={this.onPasswordChange}
-					placeholder="请输入您的密码"
-					returnKeyType="next"
-				/>
-				<FormValidationMessage>{this.state.passwordErrorMessage}</FormValidationMessage>
-				<FormLabel>确认密码</FormLabel>
-				<FormInput
-					onSubmitEditing={this.onSubmit}
-					onChangeText={this.onCheckPasswordChange}
-					returnKeyType="join"
-					secureTextEntry
-					placeholder="请再次输入您的密码"
-					style={{ height: 40 }}
-				/>
-				<FormValidationMessage>{this.state.checkPasswordErrorMessage}</FormValidationMessage>
+			<Container>
+				<Title>注册账户</Title>
+				<Form>
+					<FormLabel fontFamily={fontFamily}>用户名</FormLabel>
+					<FormInput returnKeyType="next" onChangeText={this.onUsernameChange} placeholder="请输入您的用户名" />
+					<FormValidationMessage>{this.state.usernameErrorMessage}</FormValidationMessage>
+					<FormLabel>密码</FormLabel>
+					<FormInput
+						secureTextEntry
+						onChangeText={this.onPasswordChange}
+						placeholder="请输入您的密码"
+						returnKeyType="next"
+					/>
+					<FormValidationMessage>{this.state.passwordErrorMessage}</FormValidationMessage>
+					<FormLabel>确认密码</FormLabel>
+					<FormInput
+						onSubmitEditing={this.onSubmit}
+						onChangeText={this.onCheckPasswordChange}
+						returnKeyType="join"
+						secureTextEntry
+						placeholder="请再次输入您的密码"
+						style={{ height: 40 }}
+					/>
+					<FormValidationMessage>{this.state.checkPasswordErrorMessage}</FormValidationMessage>
+				</Form>
 				<Button
 					disabled={!this.isValid}
 					style={styles.button}
@@ -183,29 +187,12 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 						登录
 					</Text>
 				</View>
-			</SafeAreaView>
+			</Container>
 		);
 	}
 }
 
 export const styles = StyleSheet.create({
-	container: {
-		paddingTop: 100,
-	},
-	title: {
-		fontFamily: fontFamily,
-		fontSize: 30,
-		marginTop: 30,
-		marginLeft: 20,
-	},
-	line: {
-		height: 3,
-		width: 40,
-		marginTop: 10,
-		marginLeft: 20,
-		marginBottom: 20,
-		backgroundColor: color.primary,
-	},
 	button: {
 		marginTop: 40,
 	},

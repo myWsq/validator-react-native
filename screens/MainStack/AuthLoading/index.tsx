@@ -29,8 +29,8 @@ export default class AuthLoading extends React.Component<AuthLoadingProps, AuthL
 			/** 将用户信息放入中心仓库中 */
 			if (data.code === ResponseCode.SUCCESS) {
 				state.user = data.data;
-				/** 跳转至主界面 */
-				this.props.navigation.navigate('Main');
+				/** 判断用户是否认证完毕 */
+				this.props.navigation.navigate(state.user.public_token ? 'Main' : 'Confirm');
 			} else {
 				/** 认证失败, 跳转至鉴权界面 */
 				this.props.navigation.navigate('Auth');

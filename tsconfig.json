@@ -5,6 +5,7 @@
       "noEmit": true,
       "moduleResolution": "node",
       "importHelpers": true,
+      "allowSyntheticDefaultImports": true
     },
     "exclude": [
       "node_modules",

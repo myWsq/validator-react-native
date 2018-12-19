@@ -5,12 +5,15 @@
 
 import * as React from 'react';
 import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
-import { Button, FormInput, FormLabel, FormValidationMessage, colors } from 'react-native-elements';
+import { Button, FormInput, FormLabel, FormValidationMessage } from 'react-native-elements';
 import { color, fontFamily } from '../../../theme';
-import { NavigationScreenProps, SafeAreaView } from 'react-navigation';
+import { NavigationScreenProps } from 'react-navigation';
 import { TOKEN_LABEL } from '../../../utils/config';
 import { post } from '../../../utils/fetch';
 import { Response, ResponseCode } from '../../../utils/interface';
+import Title from '../../../components/Title';
+import Container from '../../../components/Container';
+import Form from '../../../components/Form/Form';
 export interface SignInProps extends NavigationScreenProps {}
 
 export interface SignInState {
@@ -107,21 +110,22 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 	};
 	render() {
 		return (
-			<SafeAreaView style={styles.container}>
-				<Text style={styles.title}>登录</Text>
-				<View style={styles.line} />
-				<FormLabel fontFamily={fontFamily}>用户名</FormLabel>
-				<FormInput returnKeyType="next" onChangeText={this.onUsernameChange} placeholder="请输入您的用户名" />
-				<FormValidationMessage>{this.state.usernameErrorMessage}</FormValidationMessage>
-				<FormLabel>密码</FormLabel>
-				<FormInput
-					secureTextEntry
-					enablesReturnKeyAutomatically
-					onChangeText={this.onPasswordChange}
-					placeholder="请输入您的密码"
-					returnKeyType="done"
-				/>
-				<FormValidationMessage>{this.state.passwordErrorMessage}</FormValidationMessage>
+			<Container>
+				<Title>登录</Title>
+				<Form>
+					<FormLabel fontFamily={fontFamily}>用户名</FormLabel>
+					<FormInput returnKeyType="next" onChangeText={this.onUsernameChange} placeholder="请输入您的用户名" />
+					<FormValidationMessage>{this.state.usernameErrorMessage}</FormValidationMessage>
+					<FormLabel>密码</FormLabel>
+					<FormInput
+						secureTextEntry
+						enablesReturnKeyAutomatically
+						onChangeText={this.onPasswordChange}
+						placeholder="请输入您的密码"
+						returnKeyType="done"
+					/>
+					<FormValidationMessage>{this.state.passwordErrorMessage}</FormValidationMessage>
+				</Form>
 				<Button
 					disabled={!this.isValid}
 					style={styles.button}
@@ -142,29 +146,12 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 						立即注册
 					</Text>
 				</View>
-			</SafeAreaView>
+			</Container>
 		);
 	}
 }
 
 export const styles = StyleSheet.create({
-	container: {
-		paddingTop: 100,
-	},
-	title: {
-		fontFamily: fontFamily,
-		fontSize: 30,
-		marginTop: 30,
-		marginLeft: 20,
-	},
-	line: {
-		height: 3,
-		width: 40,
-		marginTop: 10,
-		marginLeft: 20,
-		marginBottom: 20,
-		backgroundColor: color.primary,
-	},
 	button: {
 		marginTop: 40,
 	},

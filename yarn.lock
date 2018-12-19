@@ -4179,6 +4179,10 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
+react-native-touch-id@^4.3.0:
+  version "4.3.0"
+  resolved "http://registry.npm.taobao.org/react-native-touch-id/download/react-native-touch-id-4.3.0.tgz#c25abd1d03d1ce5075f73ca87b18b47e7d60fa71"
+
 react-native-typescript-transformer@^1.2.10:
   version "1.2.10"
   resolved "http://registry.npm.taobao.org/react-native-typescript-transformer/download/react-native-typescript-transformer-1.2.10.tgz#6f76c1449028cdeafa184b533301ecd547367ed1"

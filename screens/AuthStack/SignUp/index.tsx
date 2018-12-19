@@ -14,6 +14,7 @@ import { Response, ResponseCode } from '../../../utils/interface';
 import Title from '../../../components/Title';
 import Container from '../../../components/Container';
 import Form from '../../../components/Form/Form';
+
 export interface SignUpProps extends NavigationScreenProps {}
 
 export interface SignUpState {

@@ -6,8 +6,9 @@ import Form from '../../../components/Form/Form';
 import { isMobilePhone } from 'validator';
 import ImagePicker from '../../../components/MyImagePicker';
 import styled from 'styled-components/native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Alert } from 'react-native';
 import { color } from '../../../theme';
+import TouchID from 'react-native-touch-id';
 
 const ID_CARD_REGEX = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
 
@@ -97,7 +98,22 @@ export default class InputInfo extends React.Component<InputInfoProps, InputInfo
 		);
 	}
 
-	onSubmit = () => {};
+	onSubmit = async () => {
+		if (this.isValid) {
+			if (!await TouchID.isSupported) {
+				Alert.alert('无法提交', '您的设备不支持生物加密技术, 请更换设备');
+			} else {
+				try {
+					TouchID.authenticate('请进行生物认证', {
+						color: color.primary,
+						fallbackTitle: '',
+					});
+				} catch (error) {
+					Alert.alert('认证失败', '请再次尝试');
+				}
+			}
+		}
+	};
 
 	public render() {
 		return (
@@ -124,7 +140,13 @@ export default class InputInfo extends React.Component<InputInfoProps, InputInfo
 						/>
 						<FormValidationMessage>{this.state.idCardBehindPictureErrorMessage}</FormValidationMessage>
 					</Form>
-					<Button style={{marginLeft:-20,marginRight:-20,marginBottom:50}} title="提交" backgroundColor={color.primary} disabled={!this.isValid} onPress={this.onSubmit} />
+					<Button
+						style={{ marginLeft: -20, marginRight: -20, marginBottom: 50 }}
+						title="提交"
+						backgroundColor={color.primary}
+						disabled={!this.isValid}
+						onPress={this.onSubmit}
+					/>
 				</ScrollView>
 			</SafeAreaView>
 		);

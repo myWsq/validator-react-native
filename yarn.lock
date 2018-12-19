@@ -621,6 +621,10 @@
   dependencies:
     react-native-elements "*"
 
+"@types/react-native-touch-id@^4.0.1":
+  version "4.0.1"
+  resolved "http://registry.npm.taobao.org/@types/react-native-touch-id/download/@types/react-native-touch-id-4.0.1.tgz#f4c784281d3c53f3473078f292c30edc3dd7d525"
+
 "@types/react-native@*", "@types/react-native@^0.57.18":
   version "0.57.18"
   resolved "http://registry.npm.taobao.org/@types/react-native/download/@types/react-native-0.57.18.tgz#f9c18fc59a3d038ed1f9414b84a8d9ba7078fc45"

@@ -3,7 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Image Upload</string>
+	<string>身份信息上传</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>生物信息加密</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

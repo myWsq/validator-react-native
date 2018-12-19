@@ -4,13 +4,13 @@
  */
 
 import * as React from 'react';
-import { StyleSheet, Text, View, Alert, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
 import { Button, FormInput, FormLabel, FormValidationMessage, colors } from 'react-native-elements';
-import { color, fontFamily } from '../../theme';
-import { isAlphanumeric } from 'validator';
+import { color, fontFamily } from '../../../theme';
 import { NavigationScreenProps, SafeAreaView } from 'react-navigation';
-import { TOKEN_LABEL } from '../../utils/config';
-import { post } from '../../utils/fetch';
+import { TOKEN_LABEL } from '../../../utils/config';
+import { post } from '../../../utils/fetch';
+import { Response, ResponseCode } from '../../../utils/interface';
 export interface SignInProps extends NavigationScreenProps {}
 
 export interface SignInState {
@@ -37,11 +37,17 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 		this.setState({
 			username: text,
 		});
+		this.setState({
+			usernameErrorMessage: '',
+		});
 	};
 
 	onPasswordChange = (text: string) => {
 		this.setState({
 			password: text,
+		});
+		this.setState({
+			passwordErrorMessage: '',
 		});
 	};
 
@@ -64,18 +70,36 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 				username,
 				password,
 			});
-			const data = await res.json();
+			const data = (await res.json()) as Response;
 
-			/** 登录成功 */
-			if (data.success) {
-				/** 将token写入本地存储内 */
-				await AsyncStorage.setItem(TOKEN_LABEL, data.token);
+			/** 判断请求结果 */
+			switch (data.code) {
+				/** 用户名不存在 */
+				case ResponseCode.USERNAME_NOT_EXIST:
+					this.setState({
+						usernameErrorMessage: '用户名不存在',
+					});
+					break;
 
-				/** 跳转至主流程 */
-				this.props.navigation.navigate('Main');
-			} else {
-        
+				/** 密码错误 */
+				case ResponseCode.INVALID_PASSWORD:
+					this.setState({
+						passwordErrorMessage: '密码错误',
+					});
+					break;
+
+				/** 登录成功 */
+				case ResponseCode.SUCCESS:
+					/** 将token写入本地存储内 */
+					await AsyncStorage.setItem(TOKEN_LABEL, data.data.token);
+
+					/** 跳转至主流程 */
+					this.props.navigation.navigate('Main');
+
+				default:
+					break;
 			}
+
 			this.setState({
 				loading: this.state.loading - 1,
 			});

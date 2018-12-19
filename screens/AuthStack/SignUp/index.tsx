@@ -6,9 +6,11 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, Alert, AsyncStorage } from 'react-native';
 import { Button, FormInput, FormLabel, FormValidationMessage, colors } from 'react-native-elements';
-import { color, fontFamily } from '../../theme';
+import { color, fontFamily } from '../../../theme';
 import { isAlphanumeric } from 'validator';
 import { NavigationScreenProps, SafeAreaView } from 'react-navigation';
+import { get, post } from '../../../utils/fetch';
+import { Response, ResponseCode } from '../../../utils/interface';
 export interface SignUpProps extends NavigationScreenProps {}
 
 export interface SignUpState {
@@ -100,16 +102,39 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 			this.setState({
 				loading: this.state.loading + 1,
 			});
-			Alert.alert('注册成功', null, [
-				{ text: 'OK', onPress: () => {} },
-			]);
-			/** 将token写入本地存储内 */
-			await AsyncStorage.setItem('token', 'token');
+			const res = await post('/user', {
+				username: this.state.username,
+				password: this.state.password,
+			});
+			const data = (await res.json()) as Response;
+
+			/** 判断请求结果 */
+			switch (data.code) {
+				/** 用户名已存在 */
+				case ResponseCode.USERNAME_EXIST:
+					this.setState({
+						usernameErrorMessage: '用户名已存在',
+					});
+					break;
+				case ResponseCode.SUCCESS:
+					/** 将token写入本地存储内 */
+					await AsyncStorage.setItem('token', data.data.token);
+					Alert.alert('注册成功', null, [
+						{
+							text: 'OK',
+							onPress: () => {
+								/** 跳转至登录 */
+								this.props.navigation.navigate('AuthLoading');
+							},
+						},
+					]);
+					break;
+				default:
+					break;
+			}
 			this.setState({
 				loading: this.state.loading - 1,
 			});
-			/** 跳转至登录 */
-			this.props.navigation.navigate('SignIn');
 		}
 	};
 	render() {
@@ -118,11 +143,7 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 				<Text style={styles.title}>注册账户</Text>
 				<View style={styles.line} />
 				<FormLabel fontFamily={fontFamily}>用户名</FormLabel>
-				<FormInput
-					returnKeyType="next"
-					onChangeText={this.onUsernameChange}
-					placeholder="请输入您的用户名"
-				/>
+				<FormInput returnKeyType="next" onChangeText={this.onUsernameChange} placeholder="请输入您的用户名" />
 				<FormValidationMessage>{this.state.usernameErrorMessage}</FormValidationMessage>
 				<FormLabel>密码</FormLabel>
 				<FormInput

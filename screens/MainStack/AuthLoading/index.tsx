@@ -4,10 +4,12 @@
  */
 
 import * as React from 'react';
-import { View, AsyncStorage } from 'react-native';
+import { View } from 'react-native';
 import { Text } from 'react-native-elements';
 import { NavigationScreenProps } from 'react-navigation';
-import { TOKEN_LABEL } from '../../utils/config';
+import { get } from '../../../utils/fetch';
+import { Response, ResponseCode } from '../../../utils/interface';
+import { state } from '../../../utils/store';
 
 export interface AuthLoadingProps extends NavigationScreenProps {}
 
@@ -21,8 +23,22 @@ export default class AuthLoading extends React.Component<AuthLoadingProps, AuthL
 		this._bootstrap();
 	}
 	_bootstrap = async () => {
-		const token = await AsyncStorage.getItem(TOKEN_LABEL);
-		this.props.navigation.navigate(token ? 'Main' : 'Auth');
+		try {
+			const res = await get('/auth');
+			const data = (await res.json()) as Response;
+			/** 将用户信息放入中心仓库中 */
+			if (data.code === ResponseCode.SUCCESS) {
+				state.user = data.data;
+				/** 跳转至主界面 */
+				this.props.navigation.navigate('Main');
+			} else {
+				/** 认证失败, 跳转至鉴权界面 */
+				this.props.navigation.navigate('Auth');
+			}
+		} catch (e) {
+			/** 认证失败, 跳转至鉴权界面 */
+			this.props.navigation.navigate('Auth');
+		}
 	};
 
 	public render() {

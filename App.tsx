@@ -1,31 +1,8 @@
-import * as React from 'react';
-import { View, Text } from 'react-native';
-import {
-	createStackNavigator,
-	createNavigationContainer,
-	NavigationScreenProps,
-	createSwitchNavigator,
-} from 'react-navigation';
-import SignUp from './screens/SignUp/SignUp';
-import SignIn from './screens/SignIn/SignIn';
-import AuthLoading from './screens/AuthLoading/AuthLoading';
-import { Button } from 'react-native-elements';
-
-class Home extends React.Component<NavigationScreenProps> {
-	render() {
-		return (
-			<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-				<Text>Home Screen</Text>
-				<Button
-					title="登录"
-					onPress={() => {
-						this.props.navigation.navigate('Auth');
-					}}
-				/>
-			</View>
-		);
-	}
-}
+import { createStackNavigator, createNavigationContainer, createSwitchNavigator } from 'react-navigation';
+import SignUp from './screens/AuthStack/SignUp';
+import SignIn from './screens/AuthStack/SignIn';
+import AuthLoading from './screens/MainStack/AuthLoading';
+import Home from './screens/MainStack/Home';
 
 const MainStack = createStackNavigator({
 	Home,

@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import { TOKEN_LABEL } from './config';
 import { stringify } from 'query-string';
-export const BASE_URL = 'https://todo.lanternfish.ai';
+export const BASE_URL = 'http://localhost:3003';
 
 /** 包装请求头 */
 const getHeader = async () => {
@@ -28,7 +28,7 @@ export const get = async (
 ) => {
 	let fullUrl = BASE_URL + url;
 	if (query) {
-		fullUrl += stringify(query);
+		fullUrl += `?${stringify(query)}`;
 	}
 	return fetch(fullUrl, {
 		method: 'GET',
@@ -38,14 +38,14 @@ export const get = async (
 
 export const post = async (
 	url: string,
+	body?: any,
 	query?: {
 		[key: string]: any;
-	},
-	body?: any
+	}
 ) => {
 	let fullUrl = BASE_URL + url;
 	if (query) {
-		fullUrl += stringify(query);
+		fullUrl += `?${stringify(query)}`;
 	}
 	return fetch(fullUrl, {
 		method: 'POST',

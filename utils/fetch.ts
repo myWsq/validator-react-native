@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import { TOKEN_LABEL } from './config';
 import { stringify } from 'query-string';
-export const BASE_URL = 'http://192.168.0.104:3003';
+export const BASE_URL = 'http://sxyori.com:3003';
 
 /** 包装请求头 */
 const getHeader = async () => {

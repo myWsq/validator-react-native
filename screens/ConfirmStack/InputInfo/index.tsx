@@ -6,9 +6,14 @@ import Form from '../../../components/Form/Form';
 import { isMobilePhone } from 'validator';
 import ImagePicker from '../../../components/MyImagePicker';
 import styled from 'styled-components/native';
-import { SafeAreaView, Alert } from 'react-native';
+import { SafeAreaView, Alert, AsyncStorage } from 'react-native';
 import { color } from '../../../theme';
 import TouchID from 'react-native-touch-id';
+import { post } from '../../../utils/fetch';
+import { ResponseCode } from '../../../utils/interface';
+import { PRIVATE_KEY_LABEL } from '../../../utils/config';
+import { RSA, RSAKeychain } from 'react-native-rsa-native';
+import { state } from '../../../utils/store';
 
 const ID_CARD_REGEX = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
 
@@ -23,6 +28,7 @@ export interface InputInfoState {
 	idCardNumberErrorMessage: string;
 	idCardFrontPictureErrorMessage: string;
 	idCardBehindPictureErrorMessage: string;
+	loading: number;
 }
 
 export default class InputInfo extends React.Component<InputInfoProps, InputInfoState> {
@@ -38,6 +44,7 @@ export default class InputInfo extends React.Component<InputInfoProps, InputInfo
 			idCardNumberErrorMessage: '',
 			idCardFrontPictureErrorMessage: '',
 			idCardBehindPictureErrorMessage: '',
+			loading: 0,
 		};
 	}
 
@@ -103,13 +110,47 @@ export default class InputInfo extends React.Component<InputInfoProps, InputInfo
 			if (!await TouchID.isSupported) {
 				Alert.alert('无法提交', '您的设备不支持生物加密技术, 请更换设备');
 			} else {
+				this.setState({
+					loading: this.state.loading + 1,
+				});
 				try {
-					TouchID.authenticate('请进行生物认证', {
+					const isAuthenticate = await TouchID.authenticate('请进行生物认证', {
 						color: color.primary,
 						fallbackTitle: '',
 					});
+					if (isAuthenticate) {
+						/** 生成RSA秘钥对 */
+						const keys = await RSA.generateKeys(4096);
+
+						const res = await post('/user/confirm', {
+							phoneNumber: this.state.phoneNumber,
+							idCardNumber: this.state.idCardNumber,
+							publicKey: keys.public,
+						});
+
+						const data = await res.json();
+						switch (data.code) {
+							case ResponseCode.SUCCESS:
+								await AsyncStorage.setItem(PRIVATE_KEY_LABEL, keys.private);
+								Alert.alert('认证成功');
+								state.user = null;
+								this.props.navigation.navigate('AuthLoading');
+								break;
+
+							default:
+								Alert.alert('认证失败', '请再次尝试');
+								break;
+						}
+					} else {
+						Alert.alert('认证失败', '请再次尝试');
+					}
 				} catch (error) {
+					console.error(error);
 					Alert.alert('认证失败', '请再次尝试');
+				} finally {
+					this.setState({
+						loading: this.state.loading - 1,
+					});
 				}
 			}
 		}
@@ -144,8 +185,10 @@ export default class InputInfo extends React.Component<InputInfoProps, InputInfo
 						style={{ marginLeft: -20, marginRight: -20, marginBottom: 50 }}
 						title="提交"
 						backgroundColor={color.primary}
-						disabled={!this.isValid}
+						disabled={!this.isValid || this.state.loading > 0}
+						loading={this.state.loading > 0}
 						onPress={this.onSubmit}
+						rounded
 					/>
 				</ScrollView>
 			</SafeAreaView>

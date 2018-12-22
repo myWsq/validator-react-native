@@ -4,13 +4,13 @@
  */
 
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, AsyncStorage } from 'react-native';
 import { Text } from 'react-native-elements';
 import { NavigationScreenProps } from 'react-navigation';
 import { get } from '../../../utils/fetch';
 import { Response, ResponseCode } from '../../../utils/interface';
 import { state } from '../../../utils/store';
-
+import { PRIVATE_KEY_LABEL } from '../../../utils/config';
 export interface AuthLoadingProps extends NavigationScreenProps {}
 
 export interface AuthLoadingState {}
@@ -30,7 +30,9 @@ export default class AuthLoading extends React.Component<AuthLoadingProps, AuthL
 			if (data.code === ResponseCode.SUCCESS) {
 				state.user = data.data;
 				/** 判断用户是否认证完毕 */
-				this.props.navigation.navigate(state.user.public_token ? 'Main' : 'Confirm');
+				this.props.navigation.navigate(
+					state.user.publicKey && (await AsyncStorage.getItem(PRIVATE_KEY_LABEL)) ? 'Main' : 'Confirm'
+				);
 			} else {
 				/** 认证失败, 跳转至鉴权界面 */
 				this.props.navigation.navigate('Auth');

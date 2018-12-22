@@ -169,7 +169,7 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 					<FormValidationMessage>{this.state.checkPasswordErrorMessage}</FormValidationMessage>
 				</Form>
 				<Button
-					disabled={!this.isValid}
+					disabled={!this.isValid || this.state.loading > 0}
 					style={styles.button}
 					rounded
 					backgroundColor={color.primary}

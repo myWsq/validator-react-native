@@ -21,10 +21,15 @@ const AuthStack = createStackNavigator(
 	}
 );
 
-const ConfirmStack = createSwitchNavigator({
-	InputInfo,
-	ConfirmSuccess,
-});
+const ConfirmStack = createSwitchNavigator(
+	{
+		InputInfo,
+		ConfirmSuccess,
+	},
+	{
+		initialRouteName: 'InputInfo',
+	}
+);
 
 const RootStack = createSwitchNavigator(
 	{

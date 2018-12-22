@@ -97,7 +97,7 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 					await AsyncStorage.setItem(TOKEN_LABEL, data.data.token);
 
 					/** 跳转至主流程 */
-					this.props.navigation.navigate('Main');
+					this.props.navigation.navigate('AuthLoading');
 
 				default:
 					break;
@@ -127,7 +127,7 @@ export default class SignIn extends React.Component<SignInProps, SignInState> {
 					<FormValidationMessage>{this.state.passwordErrorMessage}</FormValidationMessage>
 				</Form>
 				<Button
-					disabled={!this.isValid}
+					disabled={!this.isValid || this.state.loading > 0}
 					style={styles.button}
 					rounded
 					backgroundColor={color.primary}

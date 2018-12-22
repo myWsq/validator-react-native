@@ -7,7 +7,7 @@ import { Response, ResponseCode } from '../../../utils/interface';
 import { RSA, RSAKeychain } from 'react-native-rsa-native';
 import { state } from '../../../utils/store';
 import { AsyncStorage, Alert, View, Image } from 'react-native';
-import { PRIVATE_KEY_LABEL } from '../../../utils/config';
+import { PRIVATE_KEY_LABEL, TOKEN_LABEL } from '../../../utils/config';
 
 import TouchID from 'react-native-touch-id';
 import { color } from '../../../theme';
@@ -80,14 +80,17 @@ export default class Home extends React.Component<HomeProps, HomeState> {
 		]);
 	};
 
+	onLogout = async () => {
+		await AsyncStorage.removeItem(TOKEN_LABEL);
+		this.props.navigation.navigate('AuthLoading');
+	};
+
 	public render() {
 		return (
 			<Container>
 				<Title>欢迎, {state.user.username}</Title>
 				{!this.state.qrcodeInfo ? (
-					<Row
-						onPress={this.onQrcodeGenerate}
-					>
+					<Row onPress={this.onQrcodeGenerate}>
 						<Image
 							style={{ width: 250, height: 250 }}
 							source={require('../../../assets/fingerprint-scanning.png')}
@@ -98,6 +101,13 @@ export default class Home extends React.Component<HomeProps, HomeState> {
 						<QRCode value={this.state.qrcodeInfo} size={200} />
 					</Row>
 				)}
+				<Button
+					color={color.primary}
+					backgroundColor="#fff"
+					buttonStyle={{ borderWidth: 1, borderColor: color.primary, marginBottom: 20 }}
+					title="用户注销"
+					onPress={this.onLogout}
+				/>
 				<Button color="#fff" backgroundColor="red" title="清空本地数据" onPress={this.onClear} />
 			</Container>
 		);
@@ -106,7 +116,7 @@ export default class Home extends React.Component<HomeProps, HomeState> {
 
 const Row = styled.TouchableOpacity`
 	display: flex;
-	margin-top: -50;
+	margin-top: -60;
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;

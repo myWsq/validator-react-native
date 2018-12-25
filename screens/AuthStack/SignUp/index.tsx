@@ -64,9 +64,9 @@ export default class SignUp extends React.Component<SignUpProps, SignUpState> {
 		this.setState({
 			password: text,
 		});
-		if (text && (text.length < 6 || text.length > 20)) {
+		if (text && (text.length < 8 || text.length > 20)) {
 			this.setState({
-				passwordErrorMessage: '密码长度应在6-20位之间',
+				passwordErrorMessage: '密码长度应在8-20位之间',
 			});
 		} else {
 			this.setState({

@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, StyleProp, ViewStyle } from 'react-native';
 
-export interface ContainerProps {}
+export interface ContainerProps {
+	style?: StyleProp<ViewStyle>;
+}
 
 export interface ContainerState {}
 
@@ -12,7 +14,11 @@ export default class Container extends React.Component<ContainerProps, Container
 		this.state = {};
 	}
 	public render() {
-		return <SafeAreaView style={styles.container}>{this.props.children}</SafeAreaView>;
+		return (
+			<SafeAreaView style={this.props.style ? this.props.style : styles.container}>
+				{this.props.children}
+			</SafeAreaView>
+		);
 	}
 }
 

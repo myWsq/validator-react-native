@@ -1,18 +1,11 @@
 import * as React from 'react';
 import { NavigationScreenProps } from 'react-navigation';
-import { Text, Button } from 'react-native-elements';
+import { List, ListItem, IconProps } from 'react-native-elements';
 import Container from '../../../components/Container';
-import { get } from '../../../utils/fetch';
-import { Response, ResponseCode } from '../../../utils/interface';
-import { RSA, RSAKeychain } from 'react-native-rsa-native';
 import { state } from '../../../utils/store';
-import { AsyncStorage, Alert, View, Image } from 'react-native';
-import { PRIVATE_KEY_LABEL, TOKEN_LABEL } from '../../../utils/config';
+import { AsyncStorage, Alert } from 'react-native';
+import { TOKEN_LABEL } from '../../../utils/config';
 
-import TouchID from 'react-native-touch-id';
-import { color } from '../../../theme';
-
-import QRCode from 'react-native-qrcode';
 import styled from 'styled-components/native';
 import Title from '../../../components/Title';
 
@@ -20,6 +13,13 @@ export interface HomeProps extends NavigationScreenProps {}
 
 export interface HomeState {
 	qrcodeInfo: string;
+}
+
+export interface ListType {
+	key: string;
+	title: string;
+	icon: IconProps;
+	onPress?: any;
 }
 
 export default class Home extends React.Component<HomeProps, HomeState> {
@@ -31,37 +31,63 @@ export default class Home extends React.Component<HomeProps, HomeState> {
 		};
 	}
 
-	getQrcodeInfo = async () => {
-		const res = await get('/user/confirm');
-		const data = (await res.json()) as Response;
-		switch (data.code) {
-			case ResponseCode.SUCCESS:
-				/** 使用私钥解密 */
-				const privateKey = await AsyncStorage.getItem(PRIVATE_KEY_LABEL);
-				return await RSA.decrypt(data.data, privateKey);
-			default:
-				break;
-		}
-	};
-
-	/** 用户点击生成二维码按钮 */
-	onQrcodeGenerate = async () => {
-		try {
-			const isAuthenticate = await TouchID.authenticate('请进行生物认证', {
-				color: color.primary,
-				fallbackTitle: '',
-			});
-			if (isAuthenticate) {
-				const qrcodeInfo = await this.getQrcodeInfo();
-				console.log(qrcodeInfo);
-				this.setState({
-					qrcodeInfo,
-				});
-			}
-		} catch (error) {
-			Alert.alert('失败', '请进行生物认证');
-		}
-	};
+	LIST: ListType[] = [
+		{
+			key: 'qrcode',
+			title: '身份二维码',
+			icon: {
+				name: 'qrcode',
+				type: 'material-community',
+			},
+			onPress: () => {
+				this.props.navigation.push('QRcode');
+			},
+		},
+		{
+			key: 'auth',
+			title: '请求认证',
+			icon: {
+				name: 'box',
+				type: 'feather',
+			},
+			onPress: () => {
+				this.props.navigation.push('AuthScreen');
+			},
+		},
+		{
+			key: 'search',
+			title: '查询认证记录',
+			icon: {
+				name: 'search',
+			},
+			onPress: () => {
+				this.props.navigation.push('RecordScreen');
+			},
+		},
+		{
+			key: 'logout',
+			title: '登出',
+			icon: {
+				name: 'logout-variant',
+				type: 'material-community',
+			},
+			onPress: () => {
+				this.onLogout();
+			},
+		},
+		{
+			key: 'clear',
+			title: '清除所有数据',
+			icon: {
+				name: 'clear',
+				type: 'material',
+				color: 'red',
+			},
+			onPress: () => {
+				this.onClear();
+			},
+		},
+	];
 
 	onClear = async () => {
 		Alert.alert('确定清空吗', '再次使用将需要重新认证', [
@@ -81,34 +107,31 @@ export default class Home extends React.Component<HomeProps, HomeState> {
 	};
 
 	onLogout = async () => {
-		await AsyncStorage.removeItem(TOKEN_LABEL);
-		this.props.navigation.navigate('AuthLoading');
+		Alert.alert('确定登出吗', '', [
+			{
+				text: '取消',
+				style: 'cancel',
+			},
+			{
+				text: '确定',
+				style: 'destructive',
+				onPress: async () => {
+					await AsyncStorage.removeItem(TOKEN_LABEL);
+					this.props.navigation.navigate('AuthLoading');
+				},
+			},
+		]);
 	};
 
 	public render() {
 		return (
 			<Container>
 				<Title>欢迎, {state.user.username}</Title>
-				{!this.state.qrcodeInfo ? (
-					<Row onPress={this.onQrcodeGenerate}>
-						<Image
-							style={{ width: 250, height: 250 }}
-							source={require('../../../assets/fingerprint-scanning.png')}
-						/>
-					</Row>
-				) : (
-					<Row onPress={() => this.setState({ qrcodeInfo: '' })}>
-						<QRCode value={this.state.qrcodeInfo} size={200} />
-					</Row>
-				)}
-				<Button
-					color={color.primary}
-					backgroundColor="#fff"
-					buttonStyle={{ borderWidth: 1, borderColor: color.primary, marginBottom: 20 }}
-					title="用户注销"
-					onPress={this.onLogout}
-				/>
-				<Button color="#fff" backgroundColor="red" title="清空本地数据" onPress={this.onClear} />
+				<List containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0, marginTop: 0 }}>
+					{this.LIST.map((item) => (
+						<ListItem key={item.key} title={item.title} leftIcon={item.icon} onPress={item.onPress} />
+					))}
+				</List>
 			</Container>
 		);
 	}

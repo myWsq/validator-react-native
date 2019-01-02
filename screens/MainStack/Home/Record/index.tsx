@@ -5,6 +5,7 @@ import styled from 'styled-components/native';
 import { Divider, Text } from 'react-native-elements';
 import { color } from '../../../../theme';
 import { ScrollView } from 'react-native';
+import TouchID from 'react-native-touch-id';
 
 export interface RecordScreenProps extends NavigationScreenProps {}
 
@@ -44,6 +45,22 @@ export default class RecordScreen extends React.Component<RecordScreenProps, Rec
 				</ScrollView>
 			</Container>
 		);
+	}
+
+	async componentWillMount() {
+		/** 用户点击生成二维码按钮 */
+
+		try {
+			const isAuthenticate = await TouchID.authenticate('请进行生物认证', {
+				color: color.primary,
+				fallbackTitle: '',
+			});
+			if (!isAuthenticate) {
+				this.props.navigation.goBack()
+			}
+		} catch (error) {
+			this.props.navigation.goBack()
+		}
 	}
 }
 

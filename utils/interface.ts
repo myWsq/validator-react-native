@@ -10,3 +10,4 @@ export interface Response {
 	data?: any;
 	message?: any;
 }
+

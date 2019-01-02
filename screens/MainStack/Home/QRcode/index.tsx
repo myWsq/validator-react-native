@@ -11,6 +11,7 @@ import { color } from '../../../../theme';
 import { Text } from 'react-native-elements';
 import Spinner from 'react-native-spinkit';
 import QRCode from 'react-native-qrcode';
+import { state } from '../../../../utils/store';
 export interface QRcodeProps extends NavigationScreenProps {}
 
 export interface QRcodeState {
@@ -33,7 +34,11 @@ export default class QRcode extends React.Component<QRcodeProps, QRcodeState> {
 			case ResponseCode.SUCCESS:
 				/** 使用私钥解密 */
 				const privateKey = await AsyncStorage.getItem(PRIVATE_KEY_LABEL);
-				return await RSA.decrypt(data.data, privateKey);
+				return {
+					username: state.user.username,
+					timstamp: new Date().getTime(),
+					data: data.data
+				};
 			default:
 				break;
 		}
@@ -49,7 +54,7 @@ export default class QRcode extends React.Component<QRcodeProps, QRcodeState> {
 			if (isAuthenticate) {
 				const qrcodeInfo = await this.getQrcodeInfo();
 				this.setState({
-					qrcodeInfo,
+					qrcodeInfo: JSON.stringify(qrcodeInfo),
 				});
 			}
 		} catch (error) {

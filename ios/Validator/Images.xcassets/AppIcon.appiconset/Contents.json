@@ -3,7 +3,7 @@
     {
       "size" : "20x20",
       "idiom" : "iphone",
-      "filename" : "app-icon@20x2.png",
+      "filename" : "app-icon@40x1.png",
       "scale" : "2x"
     },
     {
@@ -51,13 +51,13 @@
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "app-icon-iTunesArtwork-1.png",
+      "filename" : "app-icon-iTunesArtwork.png",
       "scale" : "1x"
     },
     {
       "size" : "1024x1024",
       "idiom" : "ios-marketing",
-      "filename" : "app-icon-iTunesArtwork.png",
+      "filename" : "app-icon@1024x1.png",
       "scale" : "1x"
     }
   ],
